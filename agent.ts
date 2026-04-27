@@ -2,6 +2,7 @@ import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { MessagesAnnotation } from "@langchain/langgraph";
 import { initDb } from "./db.ts";
 import { initTools } from "./tools.ts";
+import { ToolNode } from "@langchain/langgraph/prebuilt";
 
 //Initialize the database
 const database = initDb("./expenses.db").then((db: any) => {
@@ -17,6 +18,10 @@ const llm = new ChatGoogleGenerativeAI({
   model: "gemini-2.5-flash-lite",
   apiKey: "your-api-key"
 });
+
+//Tool node - Providing tools to toolNode
+const toolNode = new ToolNode(tools) 
+
 
 async function callModel(state: typeof MessagesAnnotation.State) {
   //providing tools to LLM
