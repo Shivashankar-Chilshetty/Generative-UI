@@ -1,8 +1,10 @@
 import * as z from "zod"
 import { tool } from "langchain"
-import { DatabaseSync } from 'node:sqlite';
+//import { DatabaseSync } from 'node:sqlite';
 
-export function initTools(database: DatabaseSync) {
+
+
+export function initTools(database) {
   const addExpense = tool(
     ({ title, amount }) => {
       console.log(`Adding expense: ${title} with amount: ${amount}`);
