@@ -6,11 +6,7 @@ import { ToolNode } from "@langchain/langgraph/prebuilt";
 import type { AIMessage } from "langchain";
 
 //Initialize the database
-const database = initDb("./expenses.db").then((db: any) => {
-  console.log("Database initialized");
-}).catch((error: any) => {
-  console.error("Error initializing database:", error);
-});
+const database = initDb("mydb.sqlite");
 
 const tools = initTools(database);
 
@@ -57,8 +53,8 @@ const graph = new StateGraph(MessagesAnnotation)
   .addNode('callModel', callModel)
   .addNode('tools', toolNode)      //calling langgraph's inbuild toolNode to execute tools & send the result back
   .addEdge('__start__', 'callModel')
-  .addConditionalEdges('callModel', shouldContinue, { 
-    __end__: '__end__', 
+  .addConditionalEdges('callModel', shouldContinue, {
+    __end__: '__end__',
     tools: 'tools',
   });
 
@@ -71,12 +67,13 @@ const agent = graph.compile({
 
 async function main() {
   const response = await agent.invoke({
-    messages: [{ 
+    messages: [{
       role: 'user',
-      content: 'Hi'
+      content: 'I just bought a laptop for 80000 INR'
     }],
-  }, { configurable: {thread_id: '1'}}
-); //adding threadId to track each message response
+  },
+  { configurable: { thread_id: '1' } }
+  ); //adding threadId to track each message response
   console.log("Agent response:", JSON.stringify(response, null, 2));
 }
 

@@ -1,11 +1,11 @@
 //import { DatabaseSync } from 'node:sqlite';
-
 import { Database } from "bun:sqlite";
+//import { Database } from "bun:sqlite";
 
 //const db = new Database("mydb.sqlite");
 
-export async function initDb(dbPath: string) : DatabaseSync {
-  const database =  new Database(dbPath);
+export async function initDb(dbPath: string) {
+  const database = new Database(dbPath);
   const query = `
     CREATE TABLE IF NOT EXISTS expenses (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
