@@ -9,7 +9,6 @@ import type { AIMessage, ToolMessage } from "langchain";
 const database = await initDb("mydb.sqlite");
 
 const tools = initTools(database);
-//console.log("Tools initialized:", tools);
 
 // Initialize the LLM
 const llm = new ChatGoogleGenerativeAI({
@@ -82,15 +81,21 @@ const agent = graph.compile({
 });
 
 async function main() {
-  const response = await agent.invoke({
+  const response = await agent.stream({
     messages: [{
       role: 'user',
       content: 'Can you visualize how much i have spent this year group by day?'
     }],
   },
-  { configurable: { thread_id: '1' } }
+  { 
+    streamMode: 'updates', //emits an event after every agent steps
+    configurable: { thread_id: '1' },
+  }
   ); //adding threadId to track each message response
-  console.log("Agent response:", JSON.stringify(response, null, 2));
+
+  for await (const chunk of response) {
+    console.log("Received chunk:", chunk);
+  }
 }
 
 main();
