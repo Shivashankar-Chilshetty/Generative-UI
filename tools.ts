@@ -15,14 +15,17 @@ export function initTools(database: any) {
       const date = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
       // '?' are the placeholders for the values to be inserted, which helps prevent SQL injection attacks
       try {
-        const stmt = database.prepare(
-          `INSERT INTO expenses (title, amount, date) VALUES (?, ?, ?)`
-        );
-        stmt.run(title, amount, date);
-        // database.run(
-        //   `INSERT INTO expenses (title, amount, date) VALUES (?, ?, ?)`,
-        //   [title, amount, date]
+        // const stmt = database.prepare(
+        //   `INSERT INTO expenses (title, amount, date) VALUES (?, ?, ?)`
         // );
+        // stmt.run(title, amount, date);
+        database.run(
+          `INSERT INTO expenses (title, amount, date) VALUES (?, ?, ?)`,
+          [title, amount, date]
+        );
+        console.log(`INSERT INTO expenses (title, amount, date) VALUES (?, ?, ?)`,
+          [title, amount, date]);
+        console.log(`Expense added: ${title} with amount: ${amount} on date: ${date}`);
         return JSON.stringify({ status: "success" });
       } catch (error) {
         console.error("Error adding expense:", error);

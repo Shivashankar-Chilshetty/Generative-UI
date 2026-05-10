@@ -6,9 +6,10 @@ import { ToolNode } from "@langchain/langgraph/prebuilt";
 import type { AIMessage } from "langchain";
 
 //Initialize the database
-const database = initDb("mydb.sqlite");
+const database = await initDb("mydb.sqlite");
 
 const tools = initTools(database);
+//console.log("Tools initialized:", tools);
 
 // Initialize the LLM
 const llm = new ChatGoogleGenerativeAI({
