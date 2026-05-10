@@ -48,7 +48,10 @@ function shouldContinue(state: typeof MessagesAnnotation.State) {
   return '__end__';
 }
 
-
+function shouldCallModel(state: typeof MessagesAnnotation.State) {
+  //todo: change this when chart tool will be implemented
+  return 'callModel';  //if no - then return callModel to continue the conversation
+}
 //Graph 
 
 const graph = new StateGraph(MessagesAnnotation)
@@ -58,6 +61,9 @@ const graph = new StateGraph(MessagesAnnotation)
   .addConditionalEdges('callModel', shouldContinue, {
     __end__: '__end__',
     tools: 'tools',
+  })
+  .addConditionalEdges('tools', shouldCallModel, {
+    callModel: 'callModel',
   });
 
 
