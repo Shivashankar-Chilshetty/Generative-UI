@@ -30,7 +30,8 @@ async function callModel(state: typeof MessagesAnnotation.State) {
       content: `You are a helpful expense tracking assistant, 
       that helps users manage their expenses. Current datetime: ${new Date().toISOString()} 
       Call add_expense tool to add the expense to database.
-      Call get_expenses tool to get the list of expenses for a given date range from the database.`
+      Call get_expenses tool to get the list of expenses for a given date range from the database.
+      Call generate_expense_chart tool only when user needs to visualize the expenses.`
     },
     ...state.messages,    //store message history & send
   ])
@@ -77,7 +78,7 @@ async function main() {
   const response = await agent.invoke({
     messages: [{
       role: 'user',
-      content: 'How much i have spent this month?'
+      content: 'Can you visualize how much i have spent this year group by months?'
     }],
   },
   { configurable: { thread_id: '1' } }

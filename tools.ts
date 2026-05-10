@@ -45,7 +45,7 @@ export function initTools(database: any) {
         from: z.string().describe("Start date for filtering expenses, in YYYY-MM-DD format"),
         to: z.string().describe("End date for filtering expenses, in YYYY-MM-DD format")
       }).parse({ from, to });
-      
+
       try {
         let stmt;
         let rows;
@@ -72,6 +72,43 @@ export function initTools(database: any) {
     }
   );
 
-  return [addExpense, getExpenses];
+  //generate chart tool - to generate the chart for the expenses
+  const generateChart = tool(
+    ({from, to, groupBy}) => {
+      console.log(`Generating chart for expenses from ${from} to ${to} grouped by ${groupBy}`);
+      //args validation
+      const validatedArgs = z.object({
+        from: z.string().describe("Start date for filtering expenses, in YYYY-MM-DD format"),
+        to: z.string().describe("End date for filtering expenses, in YYYY-MM-DD format"),
+        groupBy: z.enum(['date', 'week', 'month']).describe("How to group the data: by week, month or date")
+      }).parse({ from, to, groupBy });
+
+      // Implementation for generating chart
+      try {
+        //strftime is a SQLite function that formats the date according to the specified format. Here, we are grouping the expenses by month using '%Y-%m' format.
+        const query = `SELECT strftime('%Y-%m', date) as period, SUM(amount) as total 
+        FROM expenses WHERE date BETWEEN ? AND ? 
+        GROUP BY period
+        ORDER BY period`;
+        const stmt = database.prepare(query);
+        const rows = stmt.all(from, to);
+        return JSON.stringify(rows);
+      } catch (error) {
+        console.error("Error generating expense chart:", error);
+        throw new Error("Failed to generate expense chart");
+      }
+    },
+    {
+      name: "generate_expense_chart",
+      description: "Generate a expense charts by querying the database & grouping expenses by month, week or date.",
+      schema: z.object({
+        from: z.string().describe("Start date for filtering expenses, in YYYY-MM-DD format"),
+        to: z.string().describe("End date for filtering expenses, in YYYY-MM-DD format"),
+        groupBy: z.enum(['date', 'week', 'month']).describe("How to group the data: by week, month or date")
+      })
+    }
+  );
+
+  return [addExpense, getExpenses, generateChart];
 }
 
