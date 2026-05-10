@@ -85,8 +85,23 @@ export function initTools(database: any) {
 
       // Implementation for generating chart
       try {
+         let sqlGroupBy: string;
+        switch(groupBy) {
+          case 'date':
+            sqlGroupBy = `date`;
+            break;
+          case 'week':
+            sqlGroupBy = `strftime('%Y-W%W', date)`; //grouping by week
+            break;
+          case 'month':
+            sqlGroupBy = `strftime('%Y-%m', date)`; //grouping by month
+            break;
+          default:            
+            sqlGroupBy = `strftime('%Y-%m', date)`;
+        }
+       
         //strftime is a SQLite function that formats the date according to the specified format. Here, we are grouping the expenses by month using '%Y-%m' format.
-        const query = `SELECT strftime('%Y-%m', date) as period, SUM(amount) as total 
+        const query = `SELECT ${sqlGroupBy} as period, SUM(amount) as total 
         FROM expenses WHERE date BETWEEN ? AND ? 
         GROUP BY period
         ORDER BY period`;

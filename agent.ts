@@ -78,7 +78,7 @@ async function main() {
   const response = await agent.invoke({
     messages: [{
       role: 'user',
-      content: 'Can you visualize how much i have spent this year group by months?'
+      content: 'Can you visualize how much i have spent this year group by day?'
     }],
   },
   { configurable: { thread_id: '1' } }
