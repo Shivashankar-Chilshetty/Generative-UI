@@ -107,7 +107,17 @@ export function initTools(database: any) {
         ORDER BY period`;
         const stmt = database.prepare(query);
         const rows = stmt.all(from, to);
-        return JSON.stringify(rows);
+        const result = rows.map((row) => {
+          return {
+            [groupBy]: row.period,  //groupBy can be date, week or month based on the user input
+            amount: row.total
+          }
+        })
+        return JSON.stringify({
+          type: 'chart',
+          data: result,
+          labelKey: groupBy
+        });
       } catch (error) {
         console.error("Error generating expense chart:", error);
         throw new Error("Failed to generate expense chart");

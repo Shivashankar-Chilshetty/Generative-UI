@@ -3,7 +3,7 @@ import { MemorySaver, MessagesAnnotation, StateGraph } from "@langchain/langgrap
 import { initDb } from "./db.ts";
 import { initTools } from "./tools.ts";
 import { ToolNode } from "@langchain/langgraph/prebuilt";
-import type { AIMessage } from "langchain";
+import type { AIMessage, ToolMessage } from "langchain";
 
 //Initialize the database
 const database = await initDb("mydb.sqlite");
@@ -50,9 +50,15 @@ function shouldContinue(state: typeof MessagesAnnotation.State) {
 }
 
 function shouldCallModel(state: typeof MessagesAnnotation.State) {
-  //todo: change this when chart tool will be implemented
+  const messages = state.messages;
+  const lastMessage = messages.at(-1) as ToolMessage; //get the last message
+  const message = JSON.parse(lastMessage.content as string); //parse the tool response
+  if(message.type === 'chart') {   //check if the tool response is for chart generation
+    return '__end__';  //if yes - then end the conversation
+  }
   return 'callModel';  //if no - then return callModel to continue the conversation
 }
+
 //Graph 
 
 const graph = new StateGraph(MessagesAnnotation)
@@ -65,6 +71,7 @@ const graph = new StateGraph(MessagesAnnotation)
   })
   .addConditionalEdges('tools', shouldCallModel, {
     callModel: 'callModel',
+    __end__: '__end__',
   });
 
 
